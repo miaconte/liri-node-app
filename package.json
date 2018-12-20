@@ -4,7 +4,12 @@
   "description": "language interpretation app",
   "main": "key.js",
   "dependencies": {
-    "node-spotify-api": "^1.0.7"
+    "axiom": "^0.1.6",
+    "axios": "^0.18.0",
+    "dotenv": "^6.2.0",
+    "moment": "^2.23.0",
+    "node-spotify-api": "^1.0.7",
+    "trilogy": "^1.4.5"
   },
   "devDependencies": {},
   "scripts": {
