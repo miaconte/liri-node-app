@@ -6,10 +6,14 @@
   "dependencies": {
     "axiom": "^0.1.6",
     "axios": "^0.18.0",
+    "bandsintown": "^1.0.1",
     "dotenv": "^6.2.0",
+    "inquirer": "^6.2.1",
     "moment": "^2.23.0",
     "node-spotify-api": "^1.0.7",
-    "trilogy": "^1.4.5"
+    "omdb": "^0.8.0",
+    "request": "^2.88.0",
+    "spotify": "^0.3.0"
   },
   "devDependencies": {},
   "scripts": {

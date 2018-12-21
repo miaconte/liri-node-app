@@ -1,71 +1,159 @@
 require("dotenv").config();
-var axios = require ("axios"); 
-var moment = require ("moment");
 var keys = require("./key.js");
-var fs = require ("fs");
+var input = require("inquirer");
+var axios = require("axios");
+var moment = require("moment");
+var Spotify = require("node-spotify-api");
+var fs = require("fs");
 
 var spotify = new Spotify(keys.spotify);
 
-var command = process.argv[2];
-var param = process.argv[3];
-
-if (command === "concert-this") {
-  let artist = process.argv[3];
-  axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=6c8bdd346ff8270ddcb47d075b6a088e").then(function(response){
-      console.log(response.data[0].venue.name);
-      console.log(response.data[0].venue.city);
-      console.log(moment(response.data[0].datetime).format("MM/DD/YYYY"));
-   });
+input.prompt([{
+  type: "list",
+  message: "Pick one of the following to find something cool",
+  choices: ["Spotify", "Movie", "Concert", "Stuff to Do"],
+  name: "selection"
+}]).then(function (selectResponse) {
+  var choice = selectResponse.selection;
+  if (choice === "Spotify") {
+    spotifyThis();
+  } else if (choice === "Concert") {
+    concertThis();
+  } else if (choice === "Movie") {
+    movieThis();
+  } else if (choice === "StuffToDo") {
+    doThis();
   }
-
-  if (command === "movie-this"){
-    let movie = process.argv[2];
-    axios.get("http://www.omdbapi.com/?t="+ name +"&y=&plot=short&apikey="+this.key)
-  }
-
-  var spotify = new Spotify({
-    id: keys.spotify.id,
-    secret: keys.spotify.secret
 });
 
-
-function spotifyThis(songName) {
-
-    spotify.search({
-        type: 'track',
-        query: songName,
-        limit: 10
-    }, 
-    function (err, data) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
+function spotifyThis() {
+  input.prompt([{
+    type: "input",
+    message: "What song would you like to play on Spotify?",
+    name: "song"
+  }]).then(function (Response) {
+    if (Response.song === '') {
+      spotify.search({
+        type: "track",
+        query: "The Sign, Ace of Base",
+        limit: 1
+      }, (error, Response) => {
+        console.log("------------------")
+        console.log("Artist Name: " + Response.tracks.items[0].artists[0].name);
+        console.log("Name: " + Response.tracks.items[0].name);
+        console.log("Album Name: " + Response.tracks.items[0].album.name);
+        console.log("URL: " + Response.tracks.items[0].external_urls.spotify);
+        console.log("------------------")
+      });
+    } else {
+      spotify.search({
+        type: "track",
+        query: Response.song,
+        limit: 1
+      }, (error, Response) => {
+        if (Response.tracks.items.length === 0) {
+          spotify.search({
+            type: "track",
+            query: "The Sign, Ace of Base",
+            limit: 1
+          }, (error, Response) => {
+            console.log("------------------")
+            console.log("Artist Name: " + Response.tracks.items[0].artists[0].name);
+            console.log("Name: " + Response.tracks.items[0].name);
+            console.log("Album Name: " + Response.tracks.items[0].album.name);
+            console.log("URL: " + Response.tracks.items[0].external_urls.spotify);
+            console.log("------------------")
+          });
+        } else {
+          console.log("Artist Name: " + Response.tracks.items[0].artists[0].name);
+          console.log("Name: " + Response.tracks.items[0].name);
+          console.log("Album Name: " + Response.tracks.items[0].album.name);
+          console.log("URL: " + Response.tracks.items[0].external_urls.spotify);
         }
-        console.log("artist name  :", data.tracks.items[0].album.artists[0].name);
-        console.log("song name: ", data.tracks.items[0].name);
-        console.log("preview url: ", data.tracks.items[0].href);
-        console.log("Album name", data.tracks.items[0].album.name);
-        var songResult = [];
-        data.tracks.items.forEach(e => {
-            var song = {
-                'Artist_name': e.album.artists[0].name,
-                'Song_Name': e.name,
-                'Preview_Url': e.href,
-                'Album_Name': e.name
-            }
-            songResult.push(song);
+      });
+    }
+  });
+}
+
+function concertThis() {
+  input.prompt([{
+    type: "input",
+    message: "What concert would you like to find?",
+    name: "concert"
+  }]).then(function (Response) {
+    axios.get("https://Responset.bandsintown.com/artists/" + Response.concert + "/events?app_id=codingbootcamp")
+      .then(Response => {
+
+        if (r.data.length === 0) {
+          console.log("Sorry, no upcoming shows");
+        } else {
+          console.log("Vanue: " + Response.data[0].venue.name);
+          console.log("City: " + Response.data[0].venue.city);
+          console.log(moment("Date: " + Response.data[0].datetime).format('MM/DD/YYYY'));
+        }
+      })
+  });
+}
+
+function movieThis() {
+  input.prompt([{
+    type: "input",
+    message: "What movie would you like to find?",
+    name: "movie"
+  }]).then(function (Response) {
+    if (Response.movie === '') {
+      axios.get("http://www.omdbapi.com/?t=mr+nobody&y=&plot=short&apikey=f96eaf82")
+        .then(Response => {
+
+          if (Response.data.Response === "False") {
+            console.log(Response.data.erroror);
+            return;
+          }
+          console.log("------------------")
+          console.log("Title: " + Response.data.Title);
+          console.log("Year: " + Response.data.Year);
+          console.log("Rated: " + Response.data.Rated);
+          console.log("IMDB Rating: " + Response.data.Ratings.Value[1]);
+          console.log("Country " + Response.data.Country);
+          console.log("Language: " + Response.data.Language);
+          console.log("Plot: " + Response.data.Plot);
+          console.log("Actor: " + Response.data.Actors);
+          console.log("------------------")
         });
+    } else {
+      axios.get("http://www.omdbapi.com/?t=" + Response.movie + "&y=&plot=short&apikey=f96eaf82")
+        .then(Response => {
 
-        const table = cTable.getTable(songResult);
-
-        console.log(table);
-
-
-        fs.appendFile("log.txt", "\n" + table, function (err) {
-            if (err) {
-                return console.log(err);
-            } else {
-                console.log("log.txt was updated");
-            }
+          if (Response.data.Response === "False") {
+            console.log(Response.data.erroror);
+            return;
+          }
+          console.log("---------------------");
+          console.log("Title: " + Response.data.Title);
+          console.log("Year: " + Response.data.Year);
+          console.log("IMDB Rating: " + Response.data.imdbRating);
+          console.log("Rotten Tomatoes Rating: " + Response.data.Ratings[2].Value);
+          console.log("Country: " + Response.data.Country);
+          console.log("Language " + Response.data.Language);
+          console.log("Plot: " + Response.data.Plot);
+          console.log("Actors: " + Response.data.Actors);
+          console.log("---------------------");
         });
+    }
+  });
+}
+
+function doThis() {
+  fs.readFile("./random.txt", (error, data) => {
+    spotify.search({
+      type: "track",
+      query: data,
+      limit: 1
+    }, (error, Response) => {
+      console.log(Response.tracks.items[0].artists[0].name);
+      console.log(Response.tracks.items[0].name);
+      console.log(Response.tracks.items[0].album.name);
+      console.log(Response.tracks.items[0].external_urls.spotify);
     });
+  });
 }
