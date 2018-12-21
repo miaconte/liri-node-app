@@ -26,6 +26,54 @@ input.prompt([{
   }
 });
 
+function movieThis() {
+  input.prompt([{
+    type: "input",
+    message: "What movie would you like to find?",
+    name: "movie"
+  }]).then(function (Response) {
+    if (Response.movie === '') {
+      axios.get("http://www.omdbapi.com/?t=mr+nobody&y=&plot=short&apikey=f96eaf82")
+        .then(Response => {
+
+          if (Response.data.Response === "False") {
+            console.log(Response.data.erroror);
+            return;
+          }
+          console.log("------------------")
+          console.log("Title: " + Response.data.Title);
+          console.log("Year: " + Response.data.Year);
+          console.log("Rated: " + Response.data.Rated);
+          console.log("IMDB Rating: " + Response.data.Ratings.Value[1]);
+          console.log("Country " + Response.data.Country);
+          console.log("Language: " + Response.data.Language);
+          console.log("Plot: " + Response.data.Plot);
+          console.log("Actor: " + Response.data.Actors);
+          console.log("------------------")
+        });
+    } else {
+      axios.get("http://www.omdbapi.com/?t=" + Response.movie + "&y=&plot=short&apikey=f96eaf82")
+        .then(Response => {
+
+          if (Response.data.Response === "False") {
+            console.log(Response.data.erroror);
+            return;
+          }
+          console.log("---------------------");
+          console.log("Title: " + Response.data.Title);
+          console.log("Year: " + Response.data.Year);
+          console.log("IMDB Rating: " + Response.data.imdbRating);
+          console.log("Rotten Tomatoes Rating: " + Response.data.Ratings[2].Value);
+          console.log("Country: " + Response.data.Country);
+          console.log("Language " + Response.data.Language);
+          console.log("Plot: " + Response.data.Plot);
+          console.log("Actors: " + Response.data.Actors);
+          console.log("---------------------");
+        });
+    }
+  });
+}
+
 function spotifyThis() {
   input.prompt([{
     type: "input",
@@ -71,74 +119,6 @@ function spotifyThis() {
           console.log("URL: " + Response.tracks.items[0].external_urls.spotify);
         }
       });
-    }
-  });
-}
-
-function concertThis() {
-  input.prompt([{
-    type: "input",
-    message: "What concert would you like to find?",
-    name: "concert"
-  }]).then(function (Response) {
-    axios.get("https://Responset.bandsintown.com/artists/" + Response.concert + "/events?app_id=codingbootcamp")
-      .then(Response => {
-
-        if (r.data.length === 0) {
-          console.log("Sorry, no upcoming shows");
-        } else {
-          console.log("Vanue: " + Response.data[0].venue.name);
-          console.log("City: " + Response.data[0].venue.city);
-          console.log(moment("Date: " + Response.data[0].datetime).format('MM/DD/YYYY'));
-        }
-      })
-  });
-}
-
-function movieThis() {
-  input.prompt([{
-    type: "input",
-    message: "What movie would you like to find?",
-    name: "movie"
-  }]).then(function (Response) {
-    if (Response.movie === '') {
-      axios.get("http://www.omdbapi.com/?t=mr+nobody&y=&plot=short&apikey=f96eaf82")
-        .then(Response => {
-
-          if (Response.data.Response === "False") {
-            console.log(Response.data.erroror);
-            return;
-          }
-          console.log("------------------")
-          console.log("Title: " + Response.data.Title);
-          console.log("Year: " + Response.data.Year);
-          console.log("Rated: " + Response.data.Rated);
-          console.log("IMDB Rating: " + Response.data.Ratings.Value[1]);
-          console.log("Country " + Response.data.Country);
-          console.log("Language: " + Response.data.Language);
-          console.log("Plot: " + Response.data.Plot);
-          console.log("Actor: " + Response.data.Actors);
-          console.log("------------------")
-        });
-    } else {
-      axios.get("http://www.omdbapi.com/?t=" + Response.movie + "&y=&plot=short&apikey=f96eaf82")
-        .then(Response => {
-
-          if (Response.data.Response === "False") {
-            console.log(Response.data.erroror);
-            return;
-          }
-          console.log("---------------------");
-          console.log("Title: " + Response.data.Title);
-          console.log("Year: " + Response.data.Year);
-          console.log("IMDB Rating: " + Response.data.imdbRating);
-          console.log("Rotten Tomatoes Rating: " + Response.data.Ratings[2].Value);
-          console.log("Country: " + Response.data.Country);
-          console.log("Language " + Response.data.Language);
-          console.log("Plot: " + Response.data.Plot);
-          console.log("Actors: " + Response.data.Actors);
-          console.log("---------------------");
-        });
     }
   });
 }
